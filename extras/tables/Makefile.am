@@ -1,5 +1,7 @@
 SUBDIRS=
 
+SUBDIRS+=	table-procexec
+
 if HAVE_TABLE_LDAP
 SUBDIRS+=	table-ldap
 endif

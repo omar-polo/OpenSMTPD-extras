@@ -1577,6 +1577,7 @@ AC_CONFIG_FILES([Makefile
 		extras/schedulers/scheduler-stub/Makefile
 
 		extras/tables/Makefile
+		extras/tables/table-procexec/Makefile
 		extras/tables/table-passwd/Makefile
 		extras/tables/table-ldap/Makefile
 		extras/tables/table-mysql/Makefile
