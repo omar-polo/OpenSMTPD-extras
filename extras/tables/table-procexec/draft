@@ -1,0 +1,30 @@
+lines with ">" are sent by smtpd^W table-procexec, "<" are the replies
+from the backend.
+
+handshake:
+
+> config|smtpd-version|7.4.0
+> config|protocol|0.1
+> config|ready
+
+< register|alias
+< register|mailaddrmap
+< register|credentials
+< ...
+< register|ready
+
+operations:
+
+> check|0.1|id|alias|op
+< check-result|id|found
+< check-result|id|not-found
+
+> lookup|0.1|id|alias|op
+< lookup-result|id|found|result...
+< lookup-result|id|not-found
+
+> fetch|0.1|id
+> fetch-result|id|result|...
+> fetch-result|id|done
+
+??
