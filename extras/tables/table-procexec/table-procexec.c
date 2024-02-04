@@ -31,8 +31,6 @@
 
 #define PROTOCOL_VERSION	"0.1"
 
-const char	*tablename = "unknown-table";
-
 int	 services;
 pid_t	 pid;
 FILE	*backend;
@@ -81,7 +79,7 @@ send_request(const char *type, int service, const char *param)
 
 	fprintf(backend, "table|%s|%lld.%06ld|%s|%s",
 	    PROTOCOL_VERSION, (long long)tv.tv_sec, (long)tv.tv_usec,
-	    tablename, type);
+	    table_api_get_name(), type);
 
 	if (service != -1) {
 		fprintf(backend, "|%s|%s|%s\n", service_name(service),
