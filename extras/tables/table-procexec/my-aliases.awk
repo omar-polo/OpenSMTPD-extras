@@ -26,3 +26,8 @@ $5 == "lookup" {
 	printf("lookup-result|%s|found|op\n", $7)
 	fflush
 }
+
+$5 == "update" {
+	printf("update-result|%s|ok\n", $7)
+	fflush
+}
