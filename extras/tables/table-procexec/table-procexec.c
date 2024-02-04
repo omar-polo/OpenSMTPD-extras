@@ -129,6 +129,9 @@ table_procexec_check(int service, struct dict *params, const char *key)
 	if (!strcmp(r, "not-found"))
 		return (0);
 
+	if (strcmp(r, "error") != 0)
+		log_warnx("invalid response: %s", r);
+
 	return (-1);
 }
 
@@ -161,6 +164,8 @@ table_procexec_lookup(int service, struct dict *params, const char *key,
 	if (!strcmp(r, "not-found"))
 		return (0);
 
+	if (strcmp(r, "error") != 0)
+		log_warnx("invalid response: %s", r);
 
 	return (-1);
 }
@@ -186,6 +191,9 @@ table_procexec_fetch(int service, struct dict *params, char *dst, size_t sz)
 			fatalx("malformed line: %s", line);
 		if (!strcmp(r, "done"))
 			break;
+		if (!strcmp(r, "error"))
+			return (-1);
+
 		if (strncmp(r, "result|", 7) != 0)
 			fatalx("malformed line: %s", line);
 		r += 7;

@@ -18,13 +18,16 @@ operations:
 > check|0.1|id|alias|op
 < check-result|id|found
 < check-result|id|not-found
+< check-result|id|error
 
 > lookup|0.1|id|alias|op
 < lookup-result|id|found|result...
 < lookup-result|id|not-found
+< lookup-result|id|error
 
 > fetch|0.1|id
 > fetch-result|id|result|...
 > fetch-result|id|done
+> fetch-result|id|error
 
 ??
