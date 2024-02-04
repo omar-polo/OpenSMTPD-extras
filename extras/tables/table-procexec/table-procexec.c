@@ -103,7 +103,20 @@ parse_reply(const char *type)
 static int
 table_procexec_update(void)
 {
-	return (-1);
+	fprintf(backend, "update|"PROTOCOL_VERSION"|%s\n", nextid());
+	if (fflush(backend) == EOF)
+		fatal("fflush");
+
+	if ((r = parse_reply("update-result")) == NULL)
+		fatalx("malformed line: %s", line);
+
+	if (!strcmp(r, "ok"))
+		return (1);
+
+	if (strcmp(r, "error") != 0)
+		log_warnx("update-result: unexpected value: %s", r);
+
+	return (0);
 }
 
 static int

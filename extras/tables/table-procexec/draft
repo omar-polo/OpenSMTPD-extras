@@ -15,6 +15,10 @@ handshake:
 
 operations:
 
+> update|0.1|id
+< update-result|id|ok
+< update-result|id|error
+
 > check|0.1|id|alias|op
 < check-result|id|found
 < check-result|id|not-found
