@@ -5,8 +5,7 @@ LIBCOMPAT	= $(top_builddir)/openbsd-compat/libopenbsd-compat.a
 LDADD		= $(LIBCOMPAT)
 
 SRCS	 = $(api_srcdir)/log.c
-SRCS	+= $(api_srcdir)/table_api.c
+SRCS	+= $(api_srcdir)/table_stdio.c
 SRCS	+= $(api_srcdir)/tree.c
 SRCS	+= $(api_srcdir)/dict.c
 SRCS	+= $(api_srcdir)/util.c
-SRCS	+= $(api_srcdir)/iobuf.c
