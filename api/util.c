@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "iobuf.h"
 #include "log.h"
 
 void *
@@ -83,31 +82,6 @@ xmemdup(const void *ptr, size_t size, const char *where)
 	memmove(r, ptr, size);
 
 	return (r);
-}
-
-void
-iobuf_xinit(struct iobuf *io, size_t size, size_t max, const char *where)
-{
-	if (iobuf_init(io, size, max) == -1) {
-		log_warnx("%s: iobuf_init(%p, %zu, %zu)", where, io, size, max);
-		fatalx("exiting");
-	}
-}
-
-void
-iobuf_xfqueue(struct iobuf *io, const char *where, const char *fmt, ...)
-{
-	va_list	ap;
-	int	len;
-
-	va_start(ap, fmt);
-	len = iobuf_vfqueue(io, fmt, ap);
-	va_end(ap);
-
-	if (len == -1) {
-		log_warnx("%s: iobuf_xfqueue(%p, %s, ...)", where, io, fmt);
-		fatalx("exiting");
-	}
 }
 
 char *
