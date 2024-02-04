@@ -15,23 +15,21 @@ handshake:
 
 operations:
 
-> update|0.1|id
+> table|0.1|timestamp|tablename|update|id
 < update-result|id|ok
 < update-result|id|error
 
-> check|0.1|id|alias|op
+> table|0.1|timestamp|tablename|check|alias|id|op
 < check-result|id|found
 < check-result|id|not-found
 < check-result|id|error
 
-> lookup|0.1|id|alias|op
+> table|0.1|timestamp|tablename|lookup|alias|id|op
 < lookup-result|id|found|result...
 < lookup-result|id|not-found
 < lookup-result|id|error
 
-> fetch|0.1|id
+> table|0.1|timestamp|tablename|fetch|id
 > fetch-result|id|found|...
 > fetch-result|id|not-found
 > fetch-result|id|error
-
-??

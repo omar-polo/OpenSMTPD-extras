@@ -17,13 +17,12 @@ $1 == "config" {
 	next
 }
 
-$1 == "check" {
-	printf("check-result|%s|found\n", $3)
+$5 == "check" {
+	printf("check-result|%s|found\n", $7)
 	fflush
-	next
 }
 
-$1 == "lookup" {
-	printf("lookup-result|%s|found|op\n", $3)
+$5 == "lookup" {
+	printf("lookup-result|%s|found|op\n", $7)
 	fflush
 }

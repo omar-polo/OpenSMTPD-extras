@@ -17,6 +17,7 @@
  */
 
 #include <sys/socket.h>
+#include <sys/time.h>
 
 #include <signal.h>
 #include <stdio.h>
@@ -29,6 +30,8 @@
 #include "log.h"
 
 #define PROTOCOL_VERSION	"0.1"
+
+const char	*tablename = "unknown-table";
 
 int	 services;
 pid_t	 pid;
@@ -69,6 +72,28 @@ service_name(int service)
 	fatalx("unknown service %d", service);
 }
 
+static int
+send_request(const char *type, int service, const char *param)
+{
+	struct timeval	 tv;
+
+	gettimeofday(&tv, NULL);
+
+	fprintf(backend, "table|%s|%lld.%06ld|%s|%s",
+	    PROTOCOL_VERSION, (long long)tv.tv_sec, (long)tv.tv_usec,
+	    tablename, type);
+
+	if (service != -1) {
+		fprintf(backend, "|%s|%s|%s\n", service_name(service),
+		    nextid(), param);
+	} else
+		fprintf(backend, "|%s\n", nextid());
+
+	if (fflush(backend) == EOF)
+		return (-1);
+	return (0);
+}
+
 static const char *
 parse_reply(const char *type)
 {
@@ -103,9 +128,10 @@ parse_reply(const char *type)
 static int
 table_procexec_update(void)
 {
-	fprintf(backend, "update|"PROTOCOL_VERSION"|%s\n", nextid());
-	if (fflush(backend) == EOF)
-		fatal("fflush");
+	const char	*r;
+
+	if (send_request("update", -1, NULL) == -1)
+		fatal("send_request");
 
 	if ((r = parse_reply("update-result")) == NULL)
 		fatalx("malformed line: %s", line);
@@ -127,9 +153,7 @@ table_procexec_check(int service, struct dict *params, const char *key)
 	if (!(services & service))
 		return (-1);
 
-	fprintf(backend, "check|"PROTOCOL_VERSION"|%s|%s|%s\n",
-	    nextid(), service_name(service), key);
-	if (fflush(backend) == EOF)
+	if (send_request("check", service, key) == -1)
 		fatal("fflush");
 
 	if ((r = parse_reply("check-result")) == NULL)
@@ -137,8 +161,6 @@ table_procexec_check(int service, struct dict *params, const char *key)
 
 	if (!strcmp(r, "found"))
 		return (1);
-	if (!strcmp(r, "not-found"))
-		return (0);
 
 	if (strcmp(r, "error") != 0)
 		log_warnx("invalid response: %s", r);
@@ -155,9 +177,7 @@ table_procexec_lookup(int service, struct dict *params, const char *key,
 	if (!(services & service))
 		return (-1);
 
-	fprintf(backend, "lookup|"PROTOCOL_VERSION"|%s|%s|%s\n",
-	    nextid(), service_name(service), key);
-	if (fflush(backend) == EOF)
+	if (send_request("lookup", service, key) == -1)
 		fatal("fflush");
 
 	if ((r = parse_reply("lookup-result")) == NULL)
@@ -189,8 +209,7 @@ table_procexec_fetch(int service, struct dict *params, char *dst, size_t sz)
 	if (!(services & service))
 		return (-1);
 
-	fprintf(backend, "fetch|"PROTOCOL_VERSION"|%s\n", nextid());
-	if (fflush(backend) == EOF)
+	if (send_request("fetch", -1, NULL))
 		fatal("fflush");
 
 	if ((r = parse_reply("fetch-result")) == NULL)
