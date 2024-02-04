@@ -82,8 +82,10 @@ send_request(const char *type, int service, const char *param)
 	    table_api_get_name(), type);
 
 	if (service != -1) {
-		fprintf(backend, "|%s|%s|%s\n", service_name(service),
-		    nextid(), param);
+		fprintf(backend, "|%s|%s", service_name(service), nextid());
+		if (param)
+			fprintf(backend, "|%s", param);
+		fputc('\n', backend);
 	} else
 		fprintf(backend, "|%s\n", nextid());
 
@@ -207,7 +209,7 @@ table_procexec_fetch(int service, struct dict *params, char *dst, size_t sz)
 	if (!(services & service))
 		return (-1);
 
-	if (send_request("fetch", -1, NULL))
+	if (send_request("fetch", service, NULL))
 		fatal("fflush");
 
 	if ((r = parse_reply("fetch-result")) == NULL)

@@ -29,7 +29,7 @@ operations:
 < lookup-result|id|not-found
 < lookup-result|id|error
 
-> table|0.1|timestamp|tablename|fetch|id
+> table|0.1|timestamp|tablename|fetch|service|id
 > fetch-result|id|found|...
 > fetch-result|id|not-found
 > fetch-result|id|error
