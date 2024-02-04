@@ -37,8 +37,6 @@ char	*line;
 size_t	 linesize;
 ssize_t	 linelen;
 
-struct dict	 sources;
-
 char id[64];
 
 static char *
@@ -174,7 +172,6 @@ static int
 table_procexec_fetch(int service, struct dict *params, char *dst, size_t sz)
 {
 	const char	*r, *k;
-	void		*source_iter;
 
 	if (!(services & service))
 		return (-1);
@@ -183,30 +180,16 @@ table_procexec_fetch(int service, struct dict *params, char *dst, size_t sz)
 	if (fflush(backend) == EOF)
 		fatal("fflush");
 
-	while (dict_poproot(&sources, NULL))
-		;
+	if ((r = parse_reply("fetch-result")) == NULL)
+		fatalx("malformed line: %s", line);
+	if (!strcmp(r, "not-found"))
+		return (0);
+	if (!strcmp(r, "error"))
+		return (-1);
 
-	for (;;) {
-		if ((r = parse_reply("fetch-result")) == NULL)
-			fatalx("malformed line: %s", line);
-		if (!strcmp(r, "done"))
-			break;
-		if (!strcmp(r, "error"))
-			return (-1);
-
-		if (strncmp(r, "result|", 7) != 0)
-			fatalx("malformed line: %s", line);
-		r += 7;
-
-		dict_set(&sources, r, NULL);
-	}
-
-	source_iter = NULL;
-	if (!dict_iter(&sources, &source_iter, &k, (void **)NULL)) {
-		source_iter = NULL;
-		if (!dict_iter(&sources, source_iter, &k, (void **)NULL))
-			return (0);
-	}
+	if (strncmp(r, "found|", 6) != 0)
+		fatalx("malformed line: %s", line);
+	r += 6;
 
 	if (strlcpy(dst, k, sz) >= sz)
 		return (-1);
@@ -326,8 +309,6 @@ main(int argc, char **argv)
 
 	if (services == 0)
 		fatalx("no services registered");
-
-	dict_init(&sources);
 
 	table_api_on_update(table_procexec_update);
 	table_api_on_check(table_procexec_check);
